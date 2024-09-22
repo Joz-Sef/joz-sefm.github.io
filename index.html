@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karlita - My Love 😻😻😻</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet"> 
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black; 
+            font-family: 'Dancing Script', cursive; 
+        }
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            display: none; 
+        }
+        .girl {
+            width: 20vw;
+            height: 20vw; 
+            background-image: url('chica.png');
+            background-size: cover;
+            position: absolute;
+            bottom: 50%; 
+            left: 50%;
+            transform: translate(-50%, 50%);
+        }
+        .flower {
+            width: 10vw; 
+            height: 7vw;
+            background-image: url('flor.png');
+            background-size: cover;
+            position: absolute;
+            opacity: 1; 
+            transition: transform 4s ease; 
+        }
+        .rain {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0.5vw;
+            height: 0.5vw;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+        .bouquet {
+            position: absolute;
+            bottom: 20vh; 
+            left: 50%;
+            transform: translateX(-50%); 
+            width: 20vw; 
+            height: 20vw;
+            background-image: url('ramo.png'); 
+            background-size: cover;
+            display: none; 
+        }
+
+        #message {
+            position: absolute;
+            top: 5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2vw;
+            color: white;
+            display: none; 
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3vw;
+            color: white;
+            opacity: 1; 
+            transition: opacity 2s; 
+        }
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5vw;
+            padding: 1vw 2vw;
+            background-color: rgba(233, 137, 120, 0.384);
+            border: none;
+            cursor: pointer;
+            font-family: 'Dancing Script', cursive; 
+        }
+        #loveMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 5vw;
+            color: red; 
+            font-weight: bold;
+            display: none; 
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); 
+            font-family: 'Dancing Script', cursive;
+        }
+        .spark {
+            position: absolute;
+            width: 1vw; 
+            height: 1vw; 
+            background-color: #FFD700; 
+            border-radius: 50%; 
+            opacity: 0;
+            animation: sparkle 1s ease forwards; 
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-5vw); opacity: 0; } 
+        }
+
+        @media (max-width: 600px) {
+            .girl {
+                width: 30vw;
+                height: 30vw;
+            }
+            .flower {
+                width: 15vw;
+                height: 10vw;
+            }
+            .bouquet {
+                width: 30vw;
+                height: 30vw;
+            }
+            #loveMessage {
+                font-size: 7vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="startButton">💕💕💕</button>
+    <div id="loading" style="display:none;">Preparando magia... Espera un momento...</div>
+    <div id="gameCanvas">
+        <div class="girl" id="girl"></div>
+    </div>
+    <div class="bouquet" id="bouquet"></div>
+    <div id="message">¡Para tu 😘, Karlita! Una Flor para otra flor.</div>
+    <div id="loveMessage">¡I LOVE MICHIFUZ!</div>
+    <audio id="backgroundMusic" src="victory.mp3" loop></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const girl = document.getElementById('girl');
+        const bouquet = document.getElementById('bouquet');
+        const message = document.getElementById('message');
+        const loading = document.getElementById('loading');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const loveMessage = document.getElementById('loveMessage');
+        let score = 0;
+        const totalFlowers = 19;
+        let flowerInterval;
+
+        function createSpark(x, y) {
+            const spark = document.createElement('div');
+            spark.classList.add('spark');
+            spark.style.left = x + 'px';
+            spark.style.bottom = y + 'px';
+            document.body.appendChild(spark);
+
+            spark.addEventListener('animationend', () => {
+                spark.remove();
+            });
+        }
+
+        function createFlower() {
+            if (score < totalFlowers) {
+                const flower = document.createElement('div');
+                flower.classList.add('flower');
+                flower.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+                flower.style.bottom = Math.random() * (window.innerHeight - 100) + 'px';
+                canvas.appendChild(flower);
+
+                createSpark(parseFloat(flower.style.left) + 75, parseFloat(flower.style.bottom) + 50); 
+
+           
+                setTimeout(() => {
+                    flower.style.transform = `translate(${(window.innerWidth / 2 - flower.offsetLeft - 75)}px, ${window.innerHeight / 2 - flower.offsetTop - 75}px)`;
+                }, 100); 
+
+                flower.addEventListener('transitionend', () => {
+                    score++;
+                    flower.remove();
+                    if (score === totalFlowers) {
+                        finishGame();
+                    }
+                });
+            }
+        }
+
+        function createRain() {
+            for (let i = 0; i < 100; i++) { 
+                const drop = document.createElement('div');
+                drop.classList.add('rain');
+                drop.style.left = Math.random() * 100 + 'vw'; 
+                drop.style.animationDuration = Math.random() * 1 + 0.5 + 's'; 
+                document.body.appendChild(drop);
+
+                drop.addEventListener('animationend', () => {
+                    drop.remove();
+                });
+            }
+        }
+
+        function finishGame() {
+            clearInterval(flowerInterval); 
+
+            setTimeout(() => {
+                bouquet.style.display = 'block'; 
+                message.style.display = 'block'; 
+                createRain(); 
+
+                setTimeout(() => {
+                    girl.style.opacity = 0; 
+                }, 2000); 
+
+                setTimeout(() => {
+                    loveMessage.style.display = 'block'; 
+                }, 30000); 
+            }, 2000); 
+        }
+
+        function showLoadingMessage(count, messages, callback) {
+            if (count > 0) {
+                loading.textContent = messages[count - 1]; 
+                loading.style.opacity = 1;
+                setTimeout(() => {
+                    loading.style.opacity = 0;
+                    setTimeout(() => showLoadingMessage(count - 1, messages, callback), 500); 
+                }, 3000); 
+            } else {
+                callback();
+            }
+        }
+
+        function startGame() {
+            loading.style.display = 'none'; 
+            canvas.style.display = 'block'; 
+            flowerInterval = setInterval(createFlower, 2000); 
+        }
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            backgroundMusic.play(); 
+            document.getElementById('startButton').style.display = 'none';  
+            loading.style.display = 'block'; 
+            const messages = [
+                "Creando la magia ⭐... ",
+                "Un momento, por favor ⌛... ",
+                "😳😳😳... ",
+                "¡La espera valdrá la pena! "
+            ];
+            showLoadingMessage(messages.length, messages, () => {
+                loading.style.opacity = 0; 
+                setTimeout(startGame, 500); 
+            });
+        });
+    </script>
+</body>
+</html>
